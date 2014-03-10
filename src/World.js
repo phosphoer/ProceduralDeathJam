@@ -25,14 +25,14 @@ TANK.registerComponent("World")
   ];
 
   this.zdepth = 0;
-  this.worldWidth = 20;
-  this.worldHeight = 20;
+  this.worldWidth = 100;
+  this.worldHeight = 100;
   this.cellSize = 50;
   this.cells = [];
   this.traversed = {};
   this.x = this.worldWidth / 2;
   this.y = this.worldHeight / 2;
-  this.timer = 0;
+  this.spawnPos = [0, 0];
 
   for (var i = 0; i < this.worldWidth; ++i)
   {
@@ -97,8 +97,48 @@ TANK.registerComponent("World")
       this.traversed[this.x + "," + this.y] += 1;
   };
 
+  this.generateNewWorld = function()
+  {
+    for (var i = 0; i < 10000; ++i)
+      this.step()
+
+    for (var i = 1; i < this.worldWidth - 1; ++i)
+    {
+      for (var j = 1; j < this.worldHeight - 1; ++j)
+      {
+        var cell = this.cells[i][j];
+        if (cell === 1 && (this.cells[i + 1][j] === 0 || this.cells[i - 1][j] === 0 ||
+        this.cells[i][j + 1] === 0 || this.cells[i][j - 1] === 0))
+        {
+          if (Math.random() < 0.01)
+          {
+            this.cells[i][j] = 2;
+          }
+        }
+      }
+    }
+
+    for (var i = 0; i < this.worldWidth; ++i)
+    {
+      for (var j = 0; j < this.worldHeight; ++j)
+      {
+        if (this.cells[i][j] === 0)
+        {
+          this.spawnPos = [i, j];
+          i = this.worldWidth;
+          j = this.worldHeight;
+        }
+      }
+    }
+  };
+
+  this.generateNewWorld();
+
   this.getCellAt = function(x, y)
   {
+    if (x < 0 || y < 0 || x >= this.worldWidth || y >= this.worldHeight)
+      return 1;
+
     return this.cells[x][y];
   };
 
@@ -106,13 +146,6 @@ TANK.registerComponent("World")
   {
     ctx.save();
     ctx.translate(-camera.x, -camera.y);
-
-    this.timer += dt;
-    if (this.timer > 0.1)
-    {
-      this.step();
-      this.timer = 0;
-    }
 
     for (var i = 0; i < this.worldWidth; ++i)
     {
