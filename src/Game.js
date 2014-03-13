@@ -9,5 +9,5 @@ TANK.registerComponent("Game")
   TANK.RenderManager.clearColor = "#000";
 
   var e = TANK.createEntity("Player");
-  TANK.addEntity(e);
+  TANK.addEntity(e, "Player");
 });

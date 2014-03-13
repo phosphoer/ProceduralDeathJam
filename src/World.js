@@ -9,12 +9,36 @@ TANK.registerComponent("World")
   this.tileSize = 64;
   this.scaleFactor = 5;
   this.rooms = [];
+  this.enemies = [];
 
   this.tiles = {};
 })
 
 .initialize(function()
 {
+  this.addEventListener("OnEnterFrame", function(dt)
+  {
+    // Check if camera is near an enemy spawn point and place the enemy
+    for (var i = 0; i < this.enemies.length; ++i)
+    {
+      var spawn = this.enemies[i];
+      if (!spawn)
+        continue;
+
+      var camera = TANK.RenderManager.camera;
+      var cameraSize = [window.innerWidth * 1.2, window.innerHeight * 1.2];
+
+      if (Math.pointInAABB([spawn.x, spawn.y], [camera.x + cameraSize[0] / 2, camera.y + cameraSize[1] / 2], cameraSize))
+      {
+        var e = TANK.createEntity("Enemy");
+        e.Pos2D.x = spawn.x;
+        e.Pos2D.y = spawn.y;
+        TANK.addEntity(e);
+        this.enemies[i] = null;
+      }
+    }
+  });
+
   this.testCollisionAtPixel = function(x, y)
   {
     x = Math.round(x);
@@ -189,6 +213,11 @@ TANK.registerComponent("World")
           newDir -= Math.PI / 2;
         this.makeTunnel(wormX, wormY, minRadius * 0.9, maxRadius * 0.9, newDir, length * 0.8, forks * 0.6);
       }
+
+      if (Math.random() < 0.05)
+      {
+        this.enemies.push({x: wormX * this.scaleFactor, y: wormY * this.scaleFactor});
+      }
     }
 
     this.makeHole(wormX, wormY, maxRadius * 2);
@@ -216,7 +245,7 @@ TANK.registerComponent("World")
     this.rooms.push(room);
   };
 
-  this.makeTunnel(0, 0, 20, 30, 0.5, 150, 6);
+  this.makeTunnel(0, 0, 20, 30, Math.PI / 2, 150, 6);
 
   this.draw = function(ctx, camera, dt)
   {

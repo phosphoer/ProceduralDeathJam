@@ -2,7 +2,7 @@ TANK.registerComponent("Bullet")
 
 .interfaces("Drawable")
 
-.requires("Pos2D, Velocity")
+.requires("Pos2D, Velocity, Collider")
 
 .construct(function()
 {
@@ -14,6 +14,12 @@ TANK.registerComponent("Bullet")
 
 .initialize(function()
 {
+  this.parent.Collider.width = 1 * TANK.World.scaleFactor;
+  this.parent.Collider.height = 1 * TANK.World.scaleFactor;
+  this.parent.Collider.collisionLayer = "Bullets";
+  this.parent.Collider.collidesWith = ["Enemies"];
+  this.parent.Collider.collidesWith = ["Player"];
+
   this.context.fillStyle = "#fff";
   this.context.fillRect(0, 0, 1, 1);
 

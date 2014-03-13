@@ -2,7 +2,7 @@ TANK.registerComponent("Player")
 
 .interfaces("Drawable")
 
-.requires("Pos2D, Velocity")
+.requires("Pos2D, Velocity, Collider")
 
 .construct(function()
 {
@@ -33,14 +33,28 @@ TANK.registerComponent("Player")
   this.context.fillRect(0, 3, 8, 2);
   this.context.fillRect(0, 1, 2, 2);
 
+  this.parent.Collider.collisionLayer = "Player";
+  this.parent.Collider.collidesWith = ["Bullets"];
+  this.parent.Collider.width = this.canvas.width * TANK.World.scaleFactor;
+  this.parent.Collider.height = this.canvas.height * TANK.World.scaleFactor;
+
   this.shoot = function()
   {
     var e = TANK.createEntity("Bullet");
-    e.Pos2D.x = this.parent.Pos2D.x;
-    e.Pos2D.y = this.parent.Pos2D.y;
+    e.Pos2D.x = this.parent.Pos2D.x + Math.cos(this.parent.Pos2D.rotation) * 8 * 5;
+    e.Pos2D.y = this.parent.Pos2D.y + Math.sin(this.parent.Pos2D.rotation) * 8 * 5;
     e.Velocity.x = Math.cos(this.parent.Pos2D.rotation) * 500;
     e.Velocity.y = Math.sin(this.parent.Pos2D.rotation) * 500;
     TANK.addEntity(e);
+  };
+
+  this.OnCollide = function(other)
+  {
+    if (other.Bullet)
+    {
+      TANK.removeEntity(this.parent);
+      TANK.removeEntity(other);
+    }
   };
 
   this.addEventListener("OnKeyPress", function(keycode)
