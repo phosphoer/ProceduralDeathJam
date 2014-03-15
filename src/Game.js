@@ -33,6 +33,21 @@ TANK.registerComponent("Game")
   this.recordUIValueA.text(save.distance + "m");
   this.recordUIValueB.text(save.collected);
 
+
+
+  this.addEventListener("OnGenerationComplete", function()
+  {
+    this.tutorialUI = $("<div class='tutorial'>WASD - Move, Space - Shoot</div>");
+    this.tutorialUI.appendTo($("body"));
+    this.tutorialUI.fadeIn(5000, function()
+      {
+        $(this).fadeOut(5000, function()
+        {
+          $(this).remove();
+        });
+      });
+  });
+
   this.restart = function()
   {
     this.restarting = true;

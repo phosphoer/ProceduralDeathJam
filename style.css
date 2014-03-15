@@ -11,8 +11,19 @@ html, body
   left: 0px;
   top: 0px;
   width: 100%;
+  min-height: 20px;
   padding: 5px;
   background: #222;
+}
+
+.tutorial
+{
+  color: #ddd;
+  font-size: 72pt;
+  display: none;
+  position: absolute;
+  left: 50px;
+  top: 50px;
 }
 
 .health-indicator, .score-indicator, .collected-indicator, .max-indicator

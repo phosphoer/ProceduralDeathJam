@@ -263,7 +263,9 @@ TANK.registerComponent("World")
     this.rooms.push(room);
   };
 
-  this.makeTunnel(0, 0, 20, 30, Math.PI / 2, 150, 6);
+  this.makeTunnel(0, 0, 20, 30, Math.PI / 2, 100, 5);
+
+  TANK.dispatchEvent("OnGenerationComplete");
 
   this.draw = function(ctx, camera, dt)
   {
