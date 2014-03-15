@@ -6,6 +6,7 @@
 
     <!-- Include TANK here -->
     <script src="lib/jquery.min.js"></script>
+    <script src="lib/lowLag.js"></script>
     <script src="lib/Tank.min.js"></script>
 
     <script src="src/InputManager.js"></script>
@@ -30,7 +31,6 @@
     <style>
     .fullscreen
     {
-        background-color:#F0F0F0;
         width: 100%;
         height: 100%;
         left: 0px;
@@ -42,6 +42,7 @@
     <div id="stage" class="fullscreen">
       <canvas id="canvas" class="fullscreen"></canvas>
     </div>
+    <div id="curtain" class="fullscreen"></div>
 
     <!-- Schedule our main entry point function to get called -->
     <script type="text/javascript">

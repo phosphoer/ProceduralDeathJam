@@ -5,6 +5,11 @@ html, body
   font-family: sans-serif;
 }
 
+#curtain
+{
+  background-color: #000;
+}
+
 .bar
 {
   position: absolute;

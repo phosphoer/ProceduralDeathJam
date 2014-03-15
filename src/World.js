@@ -290,13 +290,13 @@ TANK.registerComponent("World")
 {
   for (var i = 0; i < this.enemies.length; ++i)
   {
-    if (this.enemies[i].e && this.enemies[i].e.initialized)
+    if (this.enemies[i].e && this.enemies[i].e._initialized)
       TANK.removeEntity(this.enemies[i].e);
   }
 
   for (var i = 0; i < this.rooms.length; ++i)
   {
-    if (this.rooms[i].powerup.initialized)
+    if (this.rooms[i].powerup._initialized)
       TANK.removeEntity(this.rooms[i].powerup);
   }
 });

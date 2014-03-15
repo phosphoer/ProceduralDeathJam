@@ -9,10 +9,18 @@ TANK.registerComponent("Game")
 .initialize(function()
 {
   TANK.RenderManager.clearColor = "#000";
+  lowLag.init();
+  lowLag.load("res/shoot.wav");
+  lowLag.load("res/explode1.wav");
+  lowLag.load("res/explode2.wav");
+  lowLag.load("res/hit.wav");
+  lowLag.load("res/hit2.wav");
+  lowLag.load("res/powerup.wav");
 
   this.barUI = $("<div></div>");
   this.barUI.addClass("bar");
   this.barUI.appendTo($("body"));
+
 
   if (!localStorage["pdj-phosphoer-save"])
     localStorage["pdj-phosphoer-save"] = JSON.stringify({collected: 0, distance: 0});
@@ -33,8 +41,6 @@ TANK.registerComponent("Game")
   this.recordUIValueA.text(save.distance + "m");
   this.recordUIValueB.text(save.collected);
 
-
-
   this.addEventListener("OnGenerationComplete", function()
   {
     this.tutorialUI = $("<div class='tutorial'>WASD - Move, Space - Shoot</div>");
@@ -46,12 +52,20 @@ TANK.registerComponent("Game")
           $(this).remove();
         });
       });
+
+    $("#curtain").animate({
+      opacity: 0
+    }, 1000);
   });
 
   this.restart = function()
   {
     this.restarting = true;
     this.restartTimer = 3;
+
+    $("#curtain").animate({
+      opacity: 1
+    }, 4000);
   };
 
   this.spawnPlayer = function()
@@ -65,12 +79,15 @@ TANK.registerComponent("Game")
     if (this.restarting)
       this.restartTimer -= dt;
 
-    if (this.restarting && this.restartTimer < 0)
+    if (this.restarting && !TANK.World)
     {
-      TANK.removeComponent("World");
       TANK.addComponent("World");
       this.spawnPlayer();
       this.restarting = false;
+    }
+    if (this.restarting && this.restartTimer < 0 && TANK.World)
+    {
+      TANK.removeComponent("World");
     }
   };
 });

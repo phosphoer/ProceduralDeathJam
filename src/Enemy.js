@@ -46,6 +46,9 @@ TANK.registerComponent("Enemy")
       this.dead = true;
 
     // Test collision against world
+    if (!TANK.World)
+      return;
+
     if (TANK.World.testCollision(this.buffer, t.x - (this.canvas.width / 2) * scaleFactor, t.y - (this.canvas.height / 2) * scaleFactor))
     {
       this.dead = true;
@@ -54,6 +57,8 @@ TANK.registerComponent("Enemy")
     // If we are dead then explode
     if (this.dead)
     {
+      if (!TANK.Game.restarting)
+        lowLag.play("res/explode1.wav");
       TANK.removeEntity(this.parent);
 
       for (var i = 0; i < 15; ++i)
@@ -158,10 +163,11 @@ TANK.registerComponent("Enemy")
 
     // Shoot at player randomly
     var player = TANK.getEntity("Player");
-    if (player && Math.random() < 0.002)
+    if (player && Math.random() < 0.003 && TANK.Math.pointDistancePoint([t.x, t.y], [player.Pos2D.x, player.Pos2D.y]) < 400)
     {
+      lowLag.play("res/shoot.wav");
       var angle = Math.atan2(player.Pos2D.y - t.y, player.Pos2D.x - t.x);
-      angle += -0.2 + Math.random() * 0.2
+      angle += -0.2 + Math.random() * 0.2;
       var b = TANK.createEntity("Bullet");
       b.Pos2D.x = t.x + Math.cos(angle) * 50;
       b.Pos2D.y = t.y + Math.sin(angle) * 50;
@@ -175,6 +181,7 @@ TANK.registerComponent("Enemy")
   {
     if (other.Bullet)
     {
+      lowLag.play("res/hit.wav");
       TANK.removeEntity(other);
       --this.health;
       this.flash = true;

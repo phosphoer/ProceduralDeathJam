@@ -22,7 +22,7 @@ TANK.registerComponent("Part")
   this.addEventListener("OnEnterFrame", function(dt)
   {
     // Check for walls
-    if (TANK.World.testCollisionAtPoint(t.x, t.y))
+    if (TANK.World && TANK.World.testCollisionAtPoint(t.x, t.y))
       TANK.removeEntity(this.parent);
 
     this.parent.Velocity.y += dt * 400;
@@ -86,6 +86,9 @@ TANK.registerComponent("Particle")
 
   this.draw = function(ctx, camera)
   {
+    if (!TANK.World)
+      return;
+
     ctx.save();
     ctx.translate(t.x - camera.x, t.y - camera.y);
     ctx.scale(TANK.World.scaleFactor, TANK.World.scaleFactor);
