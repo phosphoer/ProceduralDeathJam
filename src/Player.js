@@ -102,14 +102,17 @@ TANK.registerComponent("Player")
     {
       --this.health;
       TANK.removeEntity(other);
-      this.parent.Velocity.x += other.Velocity.x * 0.2;
-      this.parent.Velocity.y += other.Velocity.y * 0.2;
+      this.parent.Velocity.x += other.Velocity.x * 0.15;
+      this.parent.Velocity.y += other.Velocity.y * 0.15;
       this.updateStatus();
       lowLag.play("res/hit.wav");
     }
 
     if (other.Powerup)
     {
+      if (this.health < 5)
+        ++this.health;
+
       TANK.removeEntity(other);
       this.weapon = other.Powerup.weapon;
       ++this.orbsCollected;
