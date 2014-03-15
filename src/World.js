@@ -18,6 +18,9 @@ TANK.registerComponent("World")
 {
   this.addEventListener("OnEnterFrame", function(dt)
   {
+    var camera = TANK.RenderManager.camera;
+    var cameraSize = [window.innerWidth * 1.2, window.innerHeight * 1.2];
+
     // Check if camera is near an enemy spawn point and place the enemy
     for (var i = 0; i < this.enemies.length; ++i)
     {
@@ -25,8 +28,6 @@ TANK.registerComponent("World")
       if (!spawn)
         continue;
 
-      var camera = TANK.RenderManager.camera;
-      var cameraSize = [window.innerWidth * 1.2, window.innerHeight * 1.2];
 
       if (Math.pointInAABB([spawn.x, spawn.y], [camera.x + cameraSize[0] / 2, camera.y + cameraSize[1] / 2], cameraSize))
       {
@@ -35,6 +36,15 @@ TANK.registerComponent("World")
         e.Pos2D.y = spawn.y;
         TANK.addEntity(e);
         this.enemies[i] = null;
+      }
+    }
+
+    // Also show canvas's where the camera is
+    for (var x = camera.x / this.scaleFactor; x <= (camera.x + cameraSize[0] * 1.3) / this.scaleFactor; x += this.tileSize)
+    {
+      for (var y = camera.y / this.scaleFactor; y <= (camera.y + cameraSize[1] * 1.3) / this.scaleFactor; y += this.tileSize)
+      {
+        this.getTileOrMake(Math.floor(x / this.tileSize), Math.floor(y / this.tileSize));
       }
     }
   });
@@ -99,7 +109,7 @@ TANK.registerComponent("World")
       tile.canvas.width = this.tileSize;
       tile.canvas.height = this.tileSize;
       tile.context = tile.canvas.getContext("2d");
-      tile.context.fillStyle = "#f53";
+      tile.context.fillStyle = "#444";
       tile.context.fillRect(0, 0, this.tileSize, this.tileSize);
       tile.buffer = tile.context.getImageData(0, 0, this.tileSize, this.tileSize);
       this.setTile(x, y, tile);

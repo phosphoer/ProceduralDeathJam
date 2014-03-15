@@ -3,6 +3,7 @@ TANK.registerComponent("Game")
 .construct(function()
 {
   this.restarting = true;
+  this.restartTimer = 0;
 })
 
 .initialize(function()
@@ -16,6 +17,7 @@ TANK.registerComponent("Game")
   this.restart = function()
   {
     this.restarting = true;
+    this.restartTimer = 3;
   };
 
   this.spawnPlayer = function()
@@ -27,6 +29,9 @@ TANK.registerComponent("Game")
   this.update = function(dt)
   {
     if (this.restarting)
+      this.restartTimer -= dt;
+
+    if (this.restarting && this.restartTimer < 0)
     {
       TANK.removeComponent("World");
       TANK.addComponent("World");

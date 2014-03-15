@@ -63,6 +63,22 @@ TANK.registerComponent("Enemy")
         e.Pos2D.y = t.y - 10 + Math.random() * 20;
         TANK.addEntity(e);
       }
+
+      for (var i = 0; i < 50; ++i)
+      {
+        var e = TANK.createEntity("Particle");
+        e.Pos2D.x = t.x;
+        e.Pos2D.y = t.y;
+        e.Particle.angle = Math.random() * Math.PI * 2;
+        e.Particle.life = 2 + Math.random();
+        e.Particle.speed = 200 + Math.random() * 200;
+        e.Particle.friction = 0.92 + Math.random() * 0.02;
+        if (Math.random() < 0.5)
+          e.Particle.color = "#333";
+        var size = Math.random() * 3;
+        e.Particle.size = [size, size];
+        TANK.addEntity(e);
+      }
     }
 
     // Check for walls in the cardinal directions in an attempt to not hit walls
@@ -172,7 +188,7 @@ TANK.registerComponent("Enemy")
     if (this.flash)
       this.context.fillStyle = "#fff";
     else
-      this.context.fillStyle = "#f00";
+      this.context.fillStyle = "#f55";
 
     this.context.fillRect(0, 0, 8, 8);
     this.buffer = this.context.getImageData(0, 0, 8, 8);
@@ -189,8 +205,8 @@ TANK.registerComponent("Enemy")
     ctx.translate(t.x - camera.x, t.y - camera.y);
     ctx.scale(scaleFactor, scaleFactor);
 
-    ctx.strokeStyle = "#f0f";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(0, 255, 255, 0.3)";
+    ctx.lineWidth = 1;
     ctx.beginPath();
     if (this.avoidUp)
     {
@@ -215,8 +231,6 @@ TANK.registerComponent("Enemy")
     ctx.closePath();
     ctx.stroke();
 
-    ctx.strokeStyle = "#0ff";
-    ctx.lineWidth = 1;
     ctx.beginPath();
     if (this.up)
     {

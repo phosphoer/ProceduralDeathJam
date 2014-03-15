@@ -47,6 +47,8 @@ TANK.registerComponent("Player")
   this.healthUIValue = $("<span class='health-indicator-value'></span>");
   this.healthUIValue.appendTo(this.healthUI);
 
+  var t = this.parent.Pos2D;
+
   this.updateStatus = function()
   {
     this.healthUIValue.removeClass(this.status);
@@ -82,9 +84,10 @@ TANK.registerComponent("Player")
       this.updateStatus();
     }
 
-    if (other.HealthPickup && this.health < 5)
+    if (other.HealthPickup)
     {
-      this.health += other.HealthPickup.value;
+      if (this.health < 5)
+        this.health += other.HealthPickup.value;
       TANK.removeEntity(other);
       this.updateStatus();
     }
@@ -129,8 +132,19 @@ TANK.registerComponent("Player")
 
     if (TANK.World.testCollision(buffer, this.parent.Pos2D.x - 4 * TANK.World.scaleFactor, this.parent.Pos2D.y - 4 * TANK.World.scaleFactor))
     {
-      this.dead = true;
+      this.health -= 1;
+      this.updateStatus();
+
+      t.x = this.oldPos[0];
+      t.y = this.oldPos[1];
+      if (Math.abs(this.parent.Velocity.x) > Math.abs(this.parent.Velocity.y))
+        this.parent.Velocity.x *= -0.5;
+      else
+        this.parent.Velocity.y *= -0.5;
+
+      this.parent.Velocity.r += Math.random() * 10 - 5;
     }
+    this.oldPos = [t.x, t.y];
 
     // Die if dead
     if (this.health <= 0)
@@ -140,6 +154,41 @@ TANK.registerComponent("Player")
     {
       TANK.removeEntity(this.parent);
       TANK.Game.restart();
+
+      for (var i = 0; i < 50; ++i)
+      {
+        var e = TANK.createEntity("Particle");
+        e.Pos2D.x = t.x;
+        e.Pos2D.y = t.y;
+        e.Particle.angle = Math.random() * Math.PI * 2;
+        e.Particle.life = 2 + Math.random();
+        e.Particle.speed = 200 + Math.random() * 200;
+        e.Particle.friction = 0.92 + Math.random() * 0.02;
+        if (Math.random() < 0.5)
+          e.Particle.color = "#333";
+        var size = Math.random() * 3;
+        e.Particle.size = [size, size];
+        TANK.addEntity(e);
+      }
+    }
+
+    if (this.status === "critical")
+    {
+      for (var i = 0; i < 1; ++i)
+      {
+        var e = TANK.createEntity("Particle");
+        e.Pos2D.x = t.x;
+        e.Pos2D.y = t.y;
+        e.Particle.angle = Math.random() * Math.PI * 2;
+        e.Particle.life = 2 + Math.random();
+        e.Particle.speed = 20 + Math.random() * 20;
+        e.Particle.friction = 0.96 + Math.random() * 0.02;
+        if (Math.random() < 0.5)
+          e.Particle.color = "#333";
+        var size = Math.random() * 3;
+        e.Particle.size = [size, size];
+        TANK.addEntity(e);
+      }
     }
 
     if (this.up)
@@ -179,7 +228,7 @@ TANK.registerComponent("Player")
 
     if (this.up)
     {
-      ctx.fillStyle = "rgba(255, 0, 0, 0.6)";
+      ctx.fillStyle = "#f55";
       ctx.beginPath();
       ctx.moveTo(0, 5);
       ctx.lineTo(-5, 3);
