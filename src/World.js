@@ -216,11 +216,11 @@ TANK.registerComponent("World")
 
       if (Math.random() < 0.05)
       {
-        this.enemies.push({x: wormX * this.scaleFactor, y: wormY * this.scaleFactor});
+        if (Math.sqrt(wormX * wormX + wormY * wormY) > 50 * this.scaleFactor)
+          this.enemies.push({x: wormX * this.scaleFactor, y: wormY * this.scaleFactor});
       }
     }
 
-    this.makeHole(wormX, wormY, maxRadius * 2);
     this.addRoom(wormX, wormY, maxRadius * 2);
   };
 
@@ -241,6 +241,13 @@ TANK.registerComponent("World")
         return;
       }
     }
+
+    this.makeHole(x, y, radius);
+
+    var e = TANK.createEntity("HealthPickup");
+    e.Pos2D.x = x * this.scaleFactor;
+    e.Pos2D.y = y * this.scaleFactor;
+    TANK.addEntity(e);
 
     this.rooms.push(room);
   };

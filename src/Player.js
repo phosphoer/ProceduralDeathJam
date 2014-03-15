@@ -6,10 +6,11 @@ TANK.registerComponent("Player")
 
 .construct(function()
 {
-  this.zdepth = 1;
+  this.zdepth = 3;
 
   this.turnAccel = 5;
   this.accel = 100;
+  this.health = 5;
 
   this.up = false;
   this.right = false;
@@ -34,9 +35,31 @@ TANK.registerComponent("Player")
   this.context.fillRect(0, 1, 2, 2);
 
   this.parent.Collider.collisionLayer = "Player";
-  this.parent.Collider.collidesWith = ["Bullets"];
+  this.parent.Collider.collidesWith = ["Bullets", "Pickups"];
   this.parent.Collider.width = this.canvas.width * TANK.World.scaleFactor;
   this.parent.Collider.height = this.canvas.height * TANK.World.scaleFactor;
+
+  this.healthUI = $("<div></div>");
+  this.healthUI.addClass("health-indicator");
+  this.healthUI.appendTo(TANK.Game.barUI);
+  this.healthUILabel = $("<span class='health-indicator-label'>Ship Status - </span>");
+  this.healthUILabel.appendTo(this.healthUI);
+  this.healthUIValue = $("<span class='health-indicator-value'></span>");
+  this.healthUIValue.appendTo(this.healthUI);
+
+  this.updateStatus = function()
+  {
+    this.healthUIValue.removeClass(this.status);
+    if (this.health > 4)
+      this.status = "good";
+    else if (this.health > 2)
+      this.status = "damaged"
+    else
+      this.status = "critical";
+    this.healthUIValue.text(this.status);
+    this.healthUIValue.addClass(this.status);
+  };
+  this.updateStatus();
 
   this.shoot = function()
   {
@@ -52,8 +75,18 @@ TANK.registerComponent("Player")
   {
     if (other.Bullet)
     {
-      TANK.removeEntity(this.parent);
+      --this.health;
       TANK.removeEntity(other);
+      this.parent.Velocity.x += other.Velocity.x * 0.2;
+      this.parent.Velocity.y += other.Velocity.y * 0.2;
+      this.updateStatus();
+    }
+
+    if (other.HealthPickup && this.health < 5)
+    {
+      this.health += other.HealthPickup.value;
+      TANK.removeEntity(other);
+      this.updateStatus();
     }
   };
 
@@ -96,7 +129,17 @@ TANK.registerComponent("Player")
 
     if (TANK.World.testCollision(buffer, this.parent.Pos2D.x - 4 * TANK.World.scaleFactor, this.parent.Pos2D.y - 4 * TANK.World.scaleFactor))
     {
+      this.dead = true;
+    }
+
+    // Die if dead
+    if (this.health <= 0)
+      this.dead = true;
+
+    if (this.dead === true)
+    {
       TANK.removeEntity(this.parent);
+      TANK.Game.restart();
     }
 
     if (this.up)
@@ -134,13 +177,22 @@ TANK.registerComponent("Player")
 
     ctx.drawImage(this.canvas, 0, 0);
 
-    ctx.restore();
+    if (this.up)
+    {
+      ctx.fillStyle = "rgba(255, 0, 0, 0.6)";
+      ctx.beginPath();
+      ctx.moveTo(0, 5);
+      ctx.lineTo(-5, 3);
+      ctx.lineTo(0, 1);
+      ctx.closePath();
+      ctx.fill();
+    }
 
-    // ctx.save();
-    // ctx.translate(this.parent.Pos2D.x - camera.x, this.parent.Pos2D.y - camera.y);
-    // ctx.scale(TANK.World.scaleFactor, TANK.World.scaleFactor);
-    // ctx.translate(-4, -4);
-    // ctx.drawImage(this.colCanvas, 0, 0);
-    // ctx.restore();
+    ctx.restore();
   };
+})
+
+.destruct(function()
+{
+  this.healthUI.remove();
 });

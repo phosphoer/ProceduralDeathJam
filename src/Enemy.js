@@ -6,8 +6,10 @@ TANK.registerComponent("Enemy")
 
 .construct(function()
 {
+  this.zdepth = 2;
+
   this.dead = false;
-  this.health = 8;
+  this.health = 6;
 
   this.flash = true;
 
