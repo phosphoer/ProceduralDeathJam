@@ -15,20 +15,38 @@ html, body
   background: #222;
 }
 
-.health-indicator
+.health-indicator, .score-indicator, .collected-indicator, .max-indicator
 {
   display: inline-block;
   font-size: 14pt;
+  margin-right: 10px;
 }
 
-.health-indicator-label
+.max-indicator
+{
+  position: absolute;;
+  right: 5px;
+}
+
+.health-indicator-label, .score-indicator-label, .collected-indicator-label, .max-indicator-label
 {
   margin-right: 5px;
   color: #ddd;
 }
 
-.health-indicator-value
+.score-sep
 {
+  color: #ddd;
+}
+
+.score-indicator-value
+{
+  color: #5f5;
+}
+
+.collected-indicator-value
+{
+  color: #55f;
 }
 
 .health-indicator-value.good

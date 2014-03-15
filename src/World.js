@@ -25,7 +25,7 @@ TANK.registerComponent("World")
     for (var i = 0; i < this.enemies.length; ++i)
     {
       var spawn = this.enemies[i];
-      if (!spawn)
+      if (spawn.e)
         continue;
 
 
@@ -35,7 +35,7 @@ TANK.registerComponent("World")
         e.Pos2D.x = spawn.x;
         e.Pos2D.y = spawn.y;
         TANK.addEntity(e);
-        this.enemies[i] = null;
+        spawn.e = e;
       }
     }
 
@@ -254,10 +254,11 @@ TANK.registerComponent("World")
 
     this.makeHole(x, y, radius);
 
-    var e = TANK.createEntity("HealthPickup");
+    var e = TANK.createEntity("Powerup");
     e.Pos2D.x = x * this.scaleFactor;
     e.Pos2D.y = y * this.scaleFactor;
     TANK.addEntity(e);
+    room.powerup = e;
 
     this.rooms.push(room);
   };
@@ -281,4 +282,19 @@ TANK.registerComponent("World")
 
     ctx.restore();
   };
+})
+
+.destruct(function()
+{
+  for (var i = 0; i < this.enemies.length; ++i)
+  {
+    if (this.enemies[i].e && this.enemies[i].e.initialized)
+      TANK.removeEntity(this.enemies[i].e);
+  }
+
+  for (var i = 0; i < this.rooms.length; ++i)
+  {
+    if (this.rooms[i].powerup.initialized)
+      TANK.removeEntity(this.rooms[i].powerup);
+  }
 });

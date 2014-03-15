@@ -1,4 +1,4 @@
-TANK.registerComponent("HealthPickup")
+TANK.registerComponent("Powerup")
 
 .interfaces("Drawable")
 
@@ -7,7 +7,7 @@ TANK.registerComponent("HealthPickup")
 .construct(function()
 {
   this.zdepth = 1;
-  this.value = 2;
+  this.weapon = Math.floor(Math.random() * 3);
   this.elapsed = 0;
 
   this.size = [5, 5];
@@ -37,7 +37,7 @@ TANK.registerComponent("HealthPickup")
     ctx.scale(scaleFactor, scaleFactor);
     ctx.translate((this.size[0] / -2), (this.size[1] / -2));
 
-    ctx.fillStyle = "#8f8";
+    ctx.fillStyle = "#55f";
     ctx.fillRect(0, 0, this.size[0], this.size[0]);
 
     ctx.restore();

@@ -11,11 +11,17 @@ TANK.registerComponent("Player")
   this.turnAccel = 5;
   this.accel = 100;
   this.health = 5;
+  this.weapon = 0;
+  this.orbsCollected = 0;
 
   this.up = false;
   this.right = false;
   this.down = false;
   this.left = false;
+
+  this.path = [];
+  this.pathTimer = 0;
+  this.pathScore = 0;
 
   this.canvas = document.createElement("canvas");
   this.canvas.width = 8;
@@ -46,6 +52,22 @@ TANK.registerComponent("Player")
   this.healthUILabel.appendTo(this.healthUI);
   this.healthUIValue = $("<span class='health-indicator-value'></span>");
   this.healthUIValue.appendTo(this.healthUI);
+
+  this.scoreUI = $("<div></div>");
+  this.scoreUI.addClass("score-indicator");
+  this.scoreUI.appendTo(TANK.Game.barUI);
+  this.scoreUILabel = $("<span class='score-indicator-label'>Distance Explored - </span>");
+  this.scoreUILabel.appendTo(this.scoreUI);
+  this.scoreUIValue = $("<span class='score-indicator-value'></span>");
+  this.scoreUIValue.appendTo(this.scoreUI);
+
+  this.collectedUI = $("<div></div>");
+  this.collectedUI.addClass("collected-indicator");
+  this.collectedUI.appendTo(TANK.Game.barUI);
+  this.collectedUILabel = $("<span class='collected-indicator-label'>Orbs Collected - </span>");
+  this.collectedUILabel.appendTo(this.collectedUI);
+  this.collectedUIValue = $("<span class='collected-indicator-value'>0</span>");
+  this.collectedUIValue.appendTo(this.collectedUI);
 
   var t = this.parent.Pos2D;
 
@@ -84,12 +106,12 @@ TANK.registerComponent("Player")
       this.updateStatus();
     }
 
-    if (other.HealthPickup)
+    if (other.Powerup)
     {
-      if (this.health < 5)
-        this.health += other.HealthPickup.value;
       TANK.removeEntity(other);
-      this.updateStatus();
+      this.weapon = other.Powerup.weapon;
+      ++this.orbsCollected;
+      this.collectedUIValue.text(this.orbsCollected);
     }
   };
 
@@ -152,6 +174,16 @@ TANK.registerComponent("Player")
 
     if (this.dead === true)
     {
+      var save = JSON.parse(localStorage["pdj-phosphoer-save"]);
+      if (save.collected < this.orbsCollected)
+        save.collected = this.orbsCollected;
+      if (save.distance < this.pathScore)
+        save.distance = this.pathScore;
+      localStorage["pdj-phosphoer-save"] = JSON.stringify(save);
+
+      TANK.Game.recordUIValueA.text(save.distance + "m");
+      TANK.Game.recordUIValueB.text(save.collected);
+
       TANK.removeEntity(this.parent);
       TANK.Game.restart();
 
@@ -213,12 +245,67 @@ TANK.registerComponent("Player")
     // Position camera
     TANK.RenderManager.camera.x = this.parent.Pos2D.x - window.innerWidth / 2;
     TANK.RenderManager.camera.y = this.parent.Pos2D.y - window.innerHeight / 2;
+
+    // Place path markers
+    this.pathTimer += dt;
+    if (this.pathTimer > 1)
+    {
+      this.pathTimer = 0;
+      var point = {x: t.x, y: t.y};
+      if (this.status === "good")
+        point.strokeStyle = "rgba(100, 255, 100, 0.4)";
+      else if (this.status === "damaged")
+        point.strokeStyle = "rgba(255, 255, 100, 0.4)";
+      else if (this.status === "critical")
+        point.strokeStyle = "rgba(255, 100, 100, 0.4)";
+
+      // var shouldPlace = true;
+      // for (var i = 0; i < this.path.length; ++i)
+      // {
+      //   if (Math.sqrt((point.x - this.path[i].x)*(point.x - this.path[i].x) + (point.y - this.path[i].y)*(point.y - this.path[i].y)) < 250)
+      //     shouldPlace = false;
+      // }
+      // if (shouldPlace)
+      this.path.push(point);
+    }
+
+    // Calculate path score
+    var dist = 0;
+    for (var i = 1; i < this.path.length; ++i)
+    {
+      var p1 = this.path[i];
+      var p2 = this.path[i - 1];
+      dist += Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+    }
+    this.pathScore = Math.round(dist / 10);
+    this.scoreUIValue.text(this.pathScore + "m");
   });
 
   this.draw = function(ctx, camera)
   {
     ctx.save();
+    ctx.strokeStyle = "rgba(100, 255, 100, 0.4)";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    if (this.path[0])
+      ctx.moveTo(this.path[0].x - camera.x, this.path[0].y - camera.y);
+    for (var i = 1; i < this.path.length; ++i)
+    {
+      ctx.lineTo(this.path[i].x - camera.x, this.path[i].y - camera.y);
+      if (this.path[i].strokeStyle != ctx.strokeStyle)
+      {
+        ctx.stroke();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.moveTo(this.path[i].x - camera.x, this.path[i].y - camera.y);
+        ctx.strokeStyle = this.path[i].strokeStyle;
+      }
+    }
+    ctx.lineTo(t.x - camera.x, t.y - camera.y);
+    ctx.stroke();
+    ctx.restore();
 
+    ctx.save();
     ctx.translate(this.parent.Pos2D.x - camera.x, this.parent.Pos2D.y - camera.y);
     ctx.rotate(this.parent.Pos2D.rotation);
     ctx.scale(TANK.World.scaleFactor, TANK.World.scaleFactor);
@@ -236,7 +323,6 @@ TANK.registerComponent("Player")
       ctx.closePath();
       ctx.fill();
     }
-
     ctx.restore();
   };
 })
@@ -244,4 +330,6 @@ TANK.registerComponent("Player")
 .destruct(function()
 {
   this.healthUI.remove();
+  this.scoreUI.remove();
+  this.collectedUI.remove();
 });
