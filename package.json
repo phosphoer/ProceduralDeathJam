@@ -1,0 +1,13 @@
+{
+  "name": "Cavern",
+  "main": "index.html",
+  "window": {
+      "title": "Cavern",
+      "toolbar": false,
+      "frame": true,
+      "width": 1024,
+      "height": 700,
+      "min_width": 800,
+      "min_height": 500
+  }
+}

@@ -179,7 +179,7 @@ TANK.registerComponent("Enemy")
 
   this.OnCollide = function(other)
   {
-    if (other.Bullet)
+    if (other.Bullet || (other.Spike && other.Spike.falling))
     {
       lowLag.play("res/hit.wav");
       TANK.removeEntity(other);
