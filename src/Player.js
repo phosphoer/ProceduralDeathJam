@@ -98,7 +98,7 @@ TANK.registerComponent("Player")
 
   this.OnCollide = function(other)
   {
-    if (other.Bullet)
+    if (other.Bullet || other.Spike)
     {
       --this.health;
       TANK.removeEntity(other);
@@ -113,6 +113,7 @@ TANK.registerComponent("Player")
       if (this.health < 5)
         ++this.health;
 
+      this.updateStatus();
       TANK.removeEntity(other);
       this.weapon = other.Powerup.weapon;
       ++this.orbsCollected;
@@ -266,14 +267,6 @@ TANK.registerComponent("Player")
         point.strokeStyle = "rgba(255, 255, 100, 0.4)";
       else if (this.status === "critical")
         point.strokeStyle = "rgba(255, 100, 100, 0.4)";
-
-      // var shouldPlace = true;
-      // for (var i = 0; i < this.path.length; ++i)
-      // {
-      //   if (Math.sqrt((point.x - this.path[i].x)*(point.x - this.path[i].x) + (point.y - this.path[i].y)*(point.y - this.path[i].y)) < 250)
-      //     shouldPlace = false;
-      // }
-      // if (shouldPlace)
       this.path.push(point);
     }
 
@@ -291,6 +284,7 @@ TANK.registerComponent("Player")
 
   this.draw = function(ctx, camera)
   {
+    // Draw path
     ctx.save();
     ctx.strokeStyle = "rgba(100, 255, 100, 0.4)";
     ctx.lineWidth = 3;
@@ -313,21 +307,49 @@ TANK.registerComponent("Player")
     ctx.stroke();
     ctx.restore();
 
+    // Draw ship
     ctx.save();
     ctx.translate(this.parent.Pos2D.x - camera.x, this.parent.Pos2D.y - camera.y);
     ctx.rotate(this.parent.Pos2D.rotation);
     ctx.scale(TANK.World.scaleFactor, TANK.World.scaleFactor);
     ctx.translate(-4, -4);
-
     ctx.drawImage(this.canvas, 0, 0);
 
+    // Draw engines
+    ctx.fillStyle = "#f55";
     if (this.up)
     {
-      ctx.fillStyle = "#f55";
       ctx.beginPath();
       ctx.moveTo(0, 5);
       ctx.lineTo(-5, 3);
       ctx.lineTo(0, 1);
+      ctx.closePath();
+      ctx.fill();
+    }
+    if (this.down)
+    {
+      ctx.beginPath();
+      ctx.moveTo(8, 3);
+      ctx.lineTo(10, 4);
+      ctx.lineTo(8, 5);
+      ctx.closePath();
+      ctx.fill();
+    }
+    if (this.left)
+    {
+      ctx.beginPath();
+      ctx.moveTo(6, 5);
+      ctx.lineTo(7, 7);
+      ctx.lineTo(8, 5);
+      ctx.closePath();
+      ctx.fill();
+    }
+    if (this.right)
+    {
+      ctx.beginPath();
+      ctx.moveTo(6, 3);
+      ctx.lineTo(7, 1);
+      ctx.lineTo(8, 3);
       ctx.closePath();
       ctx.fill();
     }
