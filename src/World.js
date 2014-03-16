@@ -10,6 +10,7 @@ TANK.registerComponent("World")
   this.scaleFactor = 5;
   this.rooms = [];
   this.enemies = [];
+  this.spikeLocations = [];
 
   this.tiles = {};
 })
@@ -201,6 +202,12 @@ TANK.registerComponent("World")
     for (var i = 0; i < length; ++i)
     {
       this.makeHole(wormX, wormY, radius);
+
+      if (Math.random() < 0.05 && Math.abs(Math.cos(wormAngle)) > 0.5)
+      {
+        this.spikeLocations.push({x: wormX * this.scaleFactor, y: wormY * this.scaleFactor});
+      }
+
       wormX += Math.cos(wormAngle) * radius / 2;
       wormY += Math.sin(wormAngle) * radius / 2;
 
@@ -229,6 +236,7 @@ TANK.registerComponent("World")
         if (Math.sqrt(wormX * wormX + wormY * wormY) > 50 * this.scaleFactor)
           this.enemies.push({x: wormX * this.scaleFactor, y: wormY * this.scaleFactor});
       }
+
     }
 
     this.addRoom(wormX, wormY, maxRadius * 2);
@@ -263,7 +271,23 @@ TANK.registerComponent("World")
     this.rooms.push(room);
   };
 
+  // Generate World
   this.makeTunnel(0, 0, 20, 30, Math.PI / 2, 100, 5);
+
+  // Place spikes in possible locations
+  for (var i = 0; i < this.spikeLocations.length; ++i)
+  {
+    var loc = this.spikeLocations[i];
+    while (!this.testCollisionAtPoint(loc.x, loc.y))
+    {
+      --loc.y;
+    }
+    var e = TANK.createEntity("Spike");
+    e.Pos2D.x = loc.x;
+    e.Pos2D.y = loc.y + 1;
+    TANK.addEntity(e);
+    loc.e = e;
+  }
 
   TANK.dispatchEvent("OnGenerationComplete");
 
@@ -298,5 +322,11 @@ TANK.registerComponent("World")
   {
     if (this.rooms[i].powerup._initialized)
       TANK.removeEntity(this.rooms[i].powerup);
+  }
+
+  for (var i = 0; i < this.spikeLocations.length; ++i)
+  {
+    if (this.spikeLocations[i].e._initialized)
+      TANK.removeEntity(this.spikeLocations[i].e);
   }
 });
