@@ -25,6 +25,9 @@ TANK.registerComponent("Bullet")
 
   this.addEventListener("OnEnterFrame", function(dt)
   {
+    if (!TANK.World)
+      return;
+      
     if (TANK.World.testCollisionAtPoint(this.parent.Pos2D.x, this.parent.Pos2D.y))
     {
       TANK.removeEntity(this.parent);
@@ -33,6 +36,9 @@ TANK.registerComponent("Bullet")
 
   this.draw = function(ctx, camera)
   {
+    if (!TANK.World)
+      return;
+      
     ctx.save();
     ctx.translate(this.parent.Pos2D.x - camera.x, this.parent.Pos2D.y - camera.y);
     ctx.scale(TANK.World.scaleFactor, TANK.World.scaleFactor);
