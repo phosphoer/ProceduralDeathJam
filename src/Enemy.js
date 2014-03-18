@@ -23,6 +23,8 @@ TANK.registerComponent("Enemy")
   this.down = false;
   this.left = false;
 
+  this.hitTimer = 0;
+
   this.canvas = document.createElement("canvas");
   this.canvas.width = 8;
   this.canvas.height = 8;
@@ -45,6 +47,8 @@ TANK.registerComponent("Enemy")
     if (this.health <= 0)
       this.dead = true;
 
+    this.hitTimer -= dt;
+
     // Test collision against world
     if (!TANK.World)
       return;
@@ -60,6 +64,13 @@ TANK.registerComponent("Enemy")
       if (!TANK.Game.restarting)
         lowLag.play("res/explode1.wav");
       TANK.removeEntity(this.parent);
+
+      var player = TANK.getEntity("Player");
+      if (this.hitTimer > 0 && player)
+      {
+        ++player.Player.kills;
+        player.Player.killsUIValue.text(player.Player.kills);
+      }
 
       for (var i = 0; i < 15; ++i)
       {
@@ -188,6 +199,8 @@ TANK.registerComponent("Enemy")
       this.parent.Velocity.x += other.Velocity.x * 0.3;
       this.parent.Velocity.y += other.Velocity.y * 0.3;
     }
+    if (other.Bullet && other.Bullet.owner && other.Bullet.owner.Player)
+      this.hitTimer = 5;
   };
 
   this.drawInternal = function()
