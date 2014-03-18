@@ -10,6 +10,8 @@ TANK.registerComponent("Bullet")
   this.canvas.width = 1;
   this.canvas.height = 1;
   this.context = this.canvas.getContext("2d");
+
+  this.owner = null;
 })
 
 .initialize(function()
@@ -27,7 +29,7 @@ TANK.registerComponent("Bullet")
   {
     if (!TANK.World)
       return;
-      
+
     if (TANK.World.testCollisionAtPoint(this.parent.Pos2D.x, this.parent.Pos2D.y))
     {
       TANK.removeEntity(this.parent);
@@ -38,7 +40,7 @@ TANK.registerComponent("Bullet")
   {
     if (!TANK.World)
       return;
-      
+
     ctx.save();
     ctx.translate(this.parent.Pos2D.x - camera.x, this.parent.Pos2D.y - camera.y);
     ctx.scale(TANK.World.scaleFactor, TANK.World.scaleFactor);

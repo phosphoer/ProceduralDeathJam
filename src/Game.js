@@ -23,7 +23,7 @@ TANK.registerComponent("Game")
 
 
   if (!localStorage["pdj-phosphoer-save"])
-    localStorage["pdj-phosphoer-save"] = JSON.stringify({collected: 0, distance: 0});
+    localStorage["pdj-phosphoer-save"] = JSON.stringify({collected: 0, distance: 0, kills: 0});
   var save = JSON.parse(localStorage["pdj-phosphoer-save"]);
 
   this.recordUI = $("<div></div>");
@@ -37,9 +37,14 @@ TANK.registerComponent("Game")
   this.recordUISep.appendTo(this.recordUI);
   this.recordUIValueB = $("<span class='collected-indicator-value'></span>");
   this.recordUIValueB.appendTo(this.recordUI);
+  this.recordUISep = $("<span class='score-sep'> / </span>");
+  this.recordUISep.appendTo(this.recordUI);
+  this.recordUIValueC = $("<span class='kills-indicator-value'></span>");
+  this.recordUIValueC.appendTo(this.recordUI);
 
   this.recordUIValueA.text(save.distance + "m");
   this.recordUIValueB.text(save.collected);
+  this.recordUIValueC.text(save.kills || 0);
 
   this.addEventListener("OnGenerationComplete", function()
   {

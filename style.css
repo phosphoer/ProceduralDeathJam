@@ -31,7 +31,7 @@ html, body
   top: 50px;
 }
 
-.health-indicator, .score-indicator, .collected-indicator, .max-indicator
+.health-indicator, .score-indicator, .collected-indicator, .max-indicator, .kills-indicator
 {
   display: inline-block;
   font-size: 14pt;
@@ -44,7 +44,7 @@ html, body
   right: 5px;
 }
 
-.health-indicator-label, .score-indicator-label, .collected-indicator-label, .max-indicator-label
+.health-indicator-label, .score-indicator-label, .collected-indicator-label, .max-indicator-label, .kills-indicator-label
 {
   margin-right: 5px;
   color: #ddd;
@@ -58,6 +58,11 @@ html, body
 .score-indicator-value
 {
   color: #5f5;
+}
+
+.kills-indicator-value
+{
+  color: #f55;
 }
 
 .collected-indicator-value

@@ -13,6 +13,7 @@ TANK.registerComponent("Player")
   this.health = 5;
   this.weapon = 0;
   this.orbsCollected = 0;
+  this.kills = 0;
 
   this.up = false;
   this.right = false;
@@ -56,7 +57,7 @@ TANK.registerComponent("Player")
   this.scoreUI = $("<div></div>");
   this.scoreUI.addClass("score-indicator");
   this.scoreUI.appendTo(TANK.Game.barUI);
-  this.scoreUILabel = $("<span class='score-indicator-label'>Distance Explored - </span>");
+  this.scoreUILabel = $("<span class='score-indicator-label'>Distance - </span>");
   this.scoreUILabel.appendTo(this.scoreUI);
   this.scoreUIValue = $("<span class='score-indicator-value'></span>");
   this.scoreUIValue.appendTo(this.scoreUI);
@@ -64,10 +65,18 @@ TANK.registerComponent("Player")
   this.collectedUI = $("<div></div>");
   this.collectedUI.addClass("collected-indicator");
   this.collectedUI.appendTo(TANK.Game.barUI);
-  this.collectedUILabel = $("<span class='collected-indicator-label'>Orbs Collected - </span>");
+  this.collectedUILabel = $("<span class='collected-indicator-label'>Orbs - </span>");
   this.collectedUILabel.appendTo(this.collectedUI);
   this.collectedUIValue = $("<span class='collected-indicator-value'>0</span>");
   this.collectedUIValue.appendTo(this.collectedUI);
+
+  this.killsUI = $("<div></div>");
+  this.killsUI.addClass("kills-indicator");
+  this.killsUI.appendTo(TANK.Game.barUI);
+  this.killsUILabel = $("<span class='kills-indicator-label'>Kills - </span>");
+  this.killsUILabel.appendTo(this.killsUI);
+  this.killsUIValue = $("<span class='kills-indicator-value'>0</span>");
+  this.killsUIValue.appendTo(this.killsUI);
 
   var t = this.parent.Pos2D;
 
@@ -92,6 +101,7 @@ TANK.registerComponent("Player")
     e.Pos2D.y = this.parent.Pos2D.y + Math.sin(this.parent.Pos2D.rotation) * 8 * 5;
     e.Velocity.x = Math.cos(this.parent.Pos2D.rotation) * 500;
     e.Velocity.y = Math.sin(this.parent.Pos2D.rotation) * 500;
+    e.Bullet.owner = this.parent;
     TANK.addEntity(e);
     lowLag.play("res/shoot.wav");
   };
@@ -188,10 +198,13 @@ TANK.registerComponent("Player")
         save.collected = this.orbsCollected;
       if (save.distance < this.pathScore)
         save.distance = this.pathScore;
+      if (save.kills < this.kills)
+        save.kills = this.kills;
       localStorage["pdj-phosphoer-save"] = JSON.stringify(save);
 
       TANK.Game.recordUIValueA.text(save.distance + "m");
       TANK.Game.recordUIValueB.text(save.collected);
+      TANK.Game.recordUIValueC.text(save.kills);
 
       TANK.removeEntity(this.parent);
       TANK.Game.restart();
@@ -362,4 +375,5 @@ TANK.registerComponent("Player")
   this.healthUI.remove();
   this.scoreUI.remove();
   this.collectedUI.remove();
+  this.killsUI.remove();
 });
