@@ -103,7 +103,7 @@ TANK.registerComponent("Player")
     e.Velocity.y = Math.sin(this.parent.Pos2D.rotation) * 500;
     e.Bullet.owner = this.parent;
     TANK.addEntity(e);
-    lowLag.play("res/shoot.wav");
+    Wave.play("shoot");
   };
 
   this.OnCollide = function(other)
@@ -115,7 +115,7 @@ TANK.registerComponent("Player")
       this.parent.Velocity.x += other.Velocity.x * 0.15;
       this.parent.Velocity.y += other.Velocity.y * 0.15;
       this.updateStatus();
-      lowLag.play("res/hit.wav");
+      Wave.play("hit");
     }
 
     if (other.Powerup)
@@ -128,7 +128,7 @@ TANK.registerComponent("Player")
       this.weapon = other.Powerup.weapon;
       ++this.orbsCollected;
       this.collectedUIValue.text(this.orbsCollected);
-      lowLag.play("res/powerup.wav");
+      Wave.play("powerup");
     }
   };
 
@@ -171,7 +171,7 @@ TANK.registerComponent("Player")
 
     if (TANK.World.testCollision(buffer, this.parent.Pos2D.x - 4 * TANK.World.scaleFactor, this.parent.Pos2D.y - 4 * TANK.World.scaleFactor))
     {
-      lowLag.play("res/hit2.wav");
+      Wave.play("hit2");
       this.health -= 1;
       this.updateStatus();
 
@@ -192,7 +192,7 @@ TANK.registerComponent("Player")
 
     if (this.dead === true)
     {
-      lowLag.play("res/explode2.wav");
+      Wave.play("explode2");
       var save = JSON.parse(localStorage["pdj-phosphoer-save"]);
       if (save.collected < this.orbsCollected)
         save.collected = this.orbsCollected;

@@ -9,13 +9,12 @@ TANK.registerComponent("Game")
 .initialize(function()
 {
   TANK.RenderManager.clearColor = "#000";
-  lowLag.init();
-  lowLag.load("res/shoot.wav");
-  lowLag.load("res/explode1.wav");
-  lowLag.load("res/explode2.wav");
-  lowLag.load("res/hit.wav");
-  lowLag.load("res/hit2.wav");
-  lowLag.load("res/powerup.wav");
+  Wave.load("res/shoot.wav", "shoot");
+  Wave.load("res/explode1.wav", "explode1");
+  Wave.load("res/explode2.wav", "explode2");
+  Wave.load("res/hit.wav", "hit");
+  Wave.load("res/hit2.wav", "hit2");
+  Wave.load("res/powerup.wav", "powerup");
 
   this.barUI = $("<div></div>");
   this.barUI.addClass("bar");
