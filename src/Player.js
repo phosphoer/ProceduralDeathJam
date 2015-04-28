@@ -200,7 +200,6 @@ TANK.registerComponent("Player")
         save.distance = this.pathScore;
       if (!save.kills || save.kills < this.kills)
         save.kills = this.kills;
-      console.log(save);
       localStorage["pdj-phosphoer-save"] = JSON.stringify(save);
 
       TANK.Game.recordUIValueA.text(save.distance + "m");
