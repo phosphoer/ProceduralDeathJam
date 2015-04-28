@@ -62,7 +62,7 @@ TANK.registerComponent("Enemy")
     if (this.dead)
     {
       if (!TANK.Game.restarting)
-        lowLag.play("res/explode1.wav");
+        Wave.play("explode1");
       TANK.removeEntity(this.parent);
 
       var player = TANK.getEntity("Player");
@@ -176,7 +176,7 @@ TANK.registerComponent("Enemy")
     var player = TANK.getEntity("Player");
     if (player && Math.random() < 0.003 && TANK.Math.pointDistancePoint([t.x, t.y], [player.Pos2D.x, player.Pos2D.y]) < 400)
     {
-      lowLag.play("res/shoot.wav");
+      Wave.play("shoot");
       var angle = Math.atan2(player.Pos2D.y - t.y, player.Pos2D.x - t.x);
       angle += -0.2 + Math.random() * 0.2;
       var b = TANK.createEntity("Bullet");
@@ -192,7 +192,7 @@ TANK.registerComponent("Enemy")
   {
     if (other.Bullet || (other.Spike && other.Spike.falling))
     {
-      lowLag.play("res/hit.wav");
+      Wave.play("hit");
       TANK.removeEntity(other);
       --this.health;
       this.flash = true;
